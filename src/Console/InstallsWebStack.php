@@ -24,24 +24,28 @@ trait InstallsWebStack
 
         // Controllers...
         $files->exists(app_path('Http/Controllers/Admin/HomeController.php'));
-        $files->copy(__DIR__.'/../../stubs/web/app/Http/Controllers/Admin/HomeController.php', app_path('Http/Controllers/Admin/HomeController.php'));
+        $files->copyDirectory(__DIR__.'/../../stubs/web/app/Http/Controllers/Admin/', app_path('Http/Controllers/Admin/'));
 
         $files->exists(app_path('Http/Controllers/Auth/LoginController.php'));
-        $files->copy(__DIR__.'/../../stubs/web/app/Http/Controllers/Auth/LoginController.php', app_path('Http/Controllers/Auth/LoginController.php'));
+        $files->copyDirectory(__DIR__.'/../../stubs/web/app/Http/Controllers/Auth/', app_path('Http/Controllers/Auth/'));
 
         // Middleware...
         $files->copyDirectory(__DIR__.'/../../stubs/web/app/Http/Middleware', app_path('Http/Middleware'));
 
         // views...
         $files->exists(resource_path('views/welcome.blade.php'));
-        $files->copy(__DIR__.'/../../stubs/web/resources/views/welcome.blade.php', resource_path('views/welcome.blade.php'));
+        $files->copyDirectory(__DIR__.'/../../stubs/web/resources/views/', resource_path('views/'));
 
         // web.php
+        //TODO: refactor
+        $path = base_path('routes/web.php');
+        $content = file_get_contents($path);
+
+        if (strpos($content, "Route::get('/', [HomeController::class, 'index'])->name('home');") !== false) {
+            return;
+        }
+
         $newContent = "\nRoute::group(['prefix' => '/', 'middleware' => ['auth', 'verified']], function () {\n\tRoute::get('/', [HomeController::class, 'index'])->name('home');\n});\n";
-        $this->replaceInFile(
-            "Route::get('/', [HomeController::class, 'index'])->name('home');",
-            $newContent,
-            base_path('routes/web.php')
-        );
+        file_put_contents($path, $content . $newContent);
     }
 }
