@@ -43,7 +43,7 @@ class InstallCommand extends Command
     {
         $this->installApiStack();
 
-        return $this->InstallsWebStack();
+        return $this->installsWebStack();
 
         // if ($this->argument('stack') === 'api') {
         //     return $this->installApiStack();

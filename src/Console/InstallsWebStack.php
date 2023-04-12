@@ -11,7 +11,7 @@ trait InstallsWebStack
      *
      * @return int|null
      */
-    protected function InstallsWebStack()
+    protected function installsWebStack()
     {
         $files = new Filesystem;
 
