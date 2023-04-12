@@ -49,8 +49,9 @@ trait InstallsApiStack
         $files->copyDirectory(__DIR__.'/../../stubs/api/app/Http/Resources', app_path('Http/Resources'));
 
         // Models
-        $files->exists(app_path('Models/User.php'));
-        $files->copy(__DIR__.'/../../stubs/api/app/Models/User.php', app_path('Models/User.php'));
+        // TODO: update to append attribute and namespace
+        // $files->exists(app_path('Models/User.php'));
+        // $files->copy(__DIR__.'/../../stubs/api/app/Models/User.php', app_path('Models/User.php'));
 
         // Providers...
         $files->copyDirectory(__DIR__.'/../../stubs/api/app/Providers', app_path('Providers'));
