@@ -6,17 +6,19 @@ use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use WebFuelAgency\UserAuthentication\Console\InstallsApiStack;
+use WebFuelAgency\UserAuthentication\Console\InstallsWebStack;
 
 class InstallCommand extends Command
 {
-    use InstallsApiStack;
+    use InstallsApiStack, InstallsWebStack;
 
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'webfuelagency:install {stack : The development stack that should be installed (api)}';
+    // protected $signature = 'webfuelagency:install {stack : The development stack that should be installed (api)}';
+    protected $signature = 'webfuelagency:install';
 
     /**
      * The console command description.
@@ -25,12 +27,12 @@ class InstallCommand extends Command
      */
     protected $description = 'Install the Starter Kit controllers and resources';
 
-    /**
-     * The available stacks.
-     *
-     * @var array<int, string>
-     */
-    protected $stacks = ['api'];
+    // /**
+    //  * The available stacks.
+    //  *
+    //  * @var array<int, string>
+    //  */
+    // protected $stacks = ['api'];
 
     /**
      * Execute the console command.
@@ -39,30 +41,34 @@ class InstallCommand extends Command
      */
     public function handle()
     {
-        if ($this->argument('stack') === 'api') {
-            return $this->installApiStack();
-        }
+        $this->installApiStack();
 
-        $this->components->error('Invalid stack. Supported stacks are [api].');
+        return $this->InstallsWebStack();
 
-        return 1;
+        // if ($this->argument('stack') === 'api') {
+        //     return $this->installApiStack();
+        // }
+
+        // $this->components->error('Invalid stack. Supported stacks are [api].');
+
+        // return 1;
     }
 
-    /**
-     * Interact with the user to prompt them when the stack argument is missing.
-     *
-     * @param  \Symfony\Component\Console\Input\InputInterface  $input
-     * @param  \Symfony\Component\Console\Output\OutputInterface  $output
-     * @return void
-     */
-    protected function interact(InputInterface $input, OutputInterface $output)
-    {
-        if ($this->argument('stack')) {
-            return;
-        }
+    // /**
+    //  * Interact with the user to prompt them when the stack argument is missing.
+    //  *
+    //  * @param  \Symfony\Component\Console\Input\InputInterface  $input
+    //  * @param  \Symfony\Component\Console\Output\OutputInterface  $output
+    //  * @return void
+    //  */
+    // protected function interact(InputInterface $input, OutputInterface $output)
+    // {
+    //     if ($this->argument('stack')) {
+    //         return;
+    //     }
 
-        $input->setArgument('stack', $this->components->choice('Which stack would you like to install?', $this->stacks));
-    }
+    //     $input->setArgument('stack', $this->components->choice('Which stack would you like to install?', $this->stacks));
+    // }
 
     /**
      * Install tests.
@@ -86,6 +92,12 @@ class InstallCommand extends Command
      */
     protected function replaceInFile($search, $replace, $path)
     {
+        $content = file_get_contents($path);
+
+        if (strpos($content, $replace) !== false) {
+            return;
+        }
+
         file_put_contents($path, str_replace($search, $replace, file_get_contents($path)));
     }
 }
