@@ -3,7 +3,6 @@
 namespace WebFuelAgency\UserAuthentication\Console;
 
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Facades\File;
 
 trait InstallsApiStack
 {
@@ -30,14 +29,6 @@ trait InstallsApiStack
         // Middleware...
         $files->copyDirectory(__DIR__.'/../../stubs/api/app/Http/Middleware', app_path('Http/Middleware'));
 
-        $this->replaceInFile('// \Laravel\Sanctum\Http', '\Laravel\Sanctum\Http', app_path('Http/Kernel.php'));
-
-        $this->replaceInFile(
-            '\Illuminate\Auth\Middleware\EnsureEmailIsVerified::class',
-            '\App\Http\Middleware\EnsureEmailIsVerified::class',
-            app_path('Http/Kernel.php')
-        );
-
         // Requests...
         $files->ensureDirectoryExists(app_path('Http/Requests/Api/Auth'));
         $files->copyDirectory(__DIR__.'/../../stubs/api/app/Http/Requests/Api/Auth', app_path('Http/Requests/Api/Auth'));
@@ -48,6 +39,18 @@ trait InstallsApiStack
         // Resources...
         $files->exists(app_path('Http/Resources/UserResource.php'));
         $files->copyDirectory(__DIR__.'/../../stubs/api/app/Http/Resources', app_path('Http/Resources'));
+
+        // Kernel.php
+        $this->replaceInFile(
+            '// \Laravel\Sanctum\Http',
+            '\Laravel\Sanctum\Http',
+            app_path('Http/Kernel.php')
+        );
+        $this->replaceInFile(
+            '\Illuminate\Auth\Middleware\EnsureEmailIsVerified::class',
+            '\App\Http\Middleware\EnsureEmailIsVerified::class',
+            app_path('Http/Kernel.php')
+        );
 
         // Models
         $this->addHasApiTokensTrait();
@@ -79,9 +82,10 @@ trait InstallsApiStack
             copy(base_path('.env.example'), base_path('.env'));
         }
 
-        file_put_contents(
-            base_path('.env'),
-            preg_replace('/APP_URL=(.*)/', 'APP_URL=http://localhost:8000'.PHP_EOL.'FRONTEND_URL=http://localhost:3000', file_get_contents(base_path('.env')))
+        $this->replaceInFile(
+            "APP_URL=http://localhost",
+            'APP_URL=http://localhost:8000'.PHP_EOL.'FRONTEND_URL=http://localhost:3000',
+            base_path('.env')
         );
 
         // Tests...

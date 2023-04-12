@@ -38,18 +38,12 @@ trait InstallsWebStack
 
         // web.php
         //TODO: refactor
-        // $path = base_path('routes/web.php');
-        // $content = file_get_contents($path);
+        $path = base_path('routes/web.php');
+        $content = file_get_contents($path);
 
         // if (strpos($content, "Route::get('/', [HomeController::class, 'index'])->name('home');") !== false) {
         //     return;
         // }
-
-        // $newContent = "\nRoute::group(['prefix' => '/', 'middleware' => ['auth', 'verified']], function () {\n\tRoute::get('/', [HomeController::class, 'index'])->name('home');\n});\n";
-        // file_put_contents($path, $content . $newContent);
-
-        $path = base_path('routes/web.php');
-        $content = file_get_contents($path);
 
         $needle = "Route::get('/', [HomeController::class, 'index'])->name('home');";
         $needleCount = substr_count($content, $needle);
